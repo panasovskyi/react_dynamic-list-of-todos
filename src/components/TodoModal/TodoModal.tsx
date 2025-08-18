@@ -15,12 +15,14 @@ const TodoModalComponent: React.FC<Props> = ({
 }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     setLoading(true);
 
     getUser(selectedTodo.userId)
       .then(setUser)
+      .catch(() => setErrorMessage('User display error'))
       .finally(() => setLoading(false));
   }, [selectedTodo]);
 
@@ -28,9 +30,13 @@ const TodoModalComponent: React.FC<Props> = ({
     <div className="modal is-active" data-cy="modal">
       <div className="modal-background" />
 
-      {loading ? (
-        <Loader />
-      ) : (
+      {loading && <Loader />}
+      {!loading && errorMessage && (
+        <div className="ModalCard">
+          <p>{errorMessage}</p>
+        </div>
+      )}
+      {!loading && !errorMessage && (
         <div className="modal-card">
           <header className="modal-card-head">
             <div

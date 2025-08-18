@@ -15,12 +15,14 @@ export const App: React.FC = () => {
   const [sortField, setSortField] = useState('all');
   const [query, setQuery] = useState('');
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     setLoading(true);
 
     getTodos()
       .then(setTodos)
+      .catch(() => setErrorMessage('No todos to display'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -73,14 +75,20 @@ export const App: React.FC = () => {
             <div className="block">
               {loading && <Loader />}
 
-              <TodoList
-                todos={preparedTodos(todos, {
-                  filterQuery: query,
-                  sort: sortField,
-                })}
-                setSelectedTodo={setSelectedTodo}
-                selectedTodo={selectedTodo}
-              />
+              {!loading && errorMessage && <p>{errorMessage}</p>}
+              {!loading && !errorMessage && todos.length === 0 && (
+                <p>No todos to display</p>
+              )}
+              {!loading && !errorMessage && todos.length > 0 && (
+                <TodoList
+                  todos={preparedTodos(todos, {
+                    filterQuery: query,
+                    sort: sortField,
+                  })}
+                  setSelectedTodo={setSelectedTodo}
+                  selectedTodo={selectedTodo}
+                />
+              )}
             </div>
           </div>
         </div>
